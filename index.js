@@ -24,6 +24,7 @@ async function run() {
     /* database */
     const database = client.db("proPlayer");
     const blogsCollection = database.collection("blogs");
+    const usersCollection = database.collection("users");
 
 
 
@@ -51,7 +52,19 @@ async function run() {
         });
       });
 
-    
+    //user sign up data saving 
+
+    app.post('/users', async(req, res) => {
+      const data = req.body
+      console.log(data);
+      const user = await usersCollection.insertOne(data)
+      res.json(user)
+    })
+
+    app.get('/users', async (req, res) => {
+      const users = await usersCollection.find({}).toArray()
+      res.send(users)
+    })
 
     // Please write down codes with commenting as like as top get request...
     // to start this server follow this command (you must install nodemon globally in your computer before running command)
