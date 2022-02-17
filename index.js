@@ -3,7 +3,24 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 const ObjectId = require("mongodb").ObjectId;
 const mongoose = require('mongoose');
+const fileUpload = require('express-fileupload');
+
+
+// const multer  = require('multer')
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/")
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "-" + file.originalname)
+//   },
+// })
+
+// const uploadStorage = multer({ storage: storage })
 var cors = require("cors");
+const { json } = require("body-parser");
+const { parse } = require("dotenv");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -11,6 +28,7 @@ const port = process.env.PORT || 5000;
 //middle ware
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cexwu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -36,22 +54,45 @@ async function run() {
         const page = req.query.page;
         const size = parseInt(req.query.size);
         const count = await cursor.count();
-        let products;
+        let blogs;
         if (page) {
-          products = await cursor
+          blogs = await cursor
             .skip(page * size)
             .limit(size)
             .toArray();
         } else {
-          products = await cursor.toArray();
+          blogs = await cursor.toArray();
         }
-  
         res.send({
           count,
-          products,
+          blogs,
         });
       });
 
+    app.post('/blogs', async (req, res) => {
+      const data = req.body
+      // const video = req.files
+      console.log(data);
+      // console.log(video);
+      const videoData = req.files.video.data;
+      const encodedVideo = videoData.toString('base64');
+      const videoBuffer = Buffer.from(encodedVideo, 'base64');
+
+
+    //   const appartamento2 = {
+    //     ids_stile: appartamento.ids_stile.split(", ").map(s => +s),
+    //     ids_personaggi: appartamento.ids_personaggi.split(", ").map(s => parseInt(s)),
+    // }
+
+      const post = {
+            title : data.title, privacy: data.privacy, monetize : data.monetize, language : data.language, description : data.description, license : data.license, status: data.status, category : data.category.split(',').map(s => s) , tags : data.tags.split(',').map(s => s), video: videoBuffer,  comment: []
+        }
+      console.log( post);
+      const blog = await blogsCollection.insertOne(post)
+      res.json(blog)
+    })
+
+    
     //user sign up data saving 
 
     app.post('/users', async(req, res) => {
@@ -64,6 +105,18 @@ async function run() {
     app.get('/users', async (req, res) => {
       const users = await usersCollection.find({}).toArray()
       res.send(users)
+    })
+
+    //if your data already had saved in the database then we don't want save it again
+    app.put('/users', async (req, res) => {
+      const data = req.body
+      const filter = {email : data.email}
+      const option = {upsert : true}
+      const updateDoc = {
+        $set : data,
+      }
+      const user =  await usersCollection.updateOne(filter, updateDoc, option);
+      res.json(user)
     })
 
     // Please write down codes with commenting as like as top get request...
