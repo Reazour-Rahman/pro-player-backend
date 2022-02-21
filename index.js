@@ -59,6 +59,27 @@ async function run() {
         count = await cursor.count();
       }
 
+      res.send({
+        count,
+        products,
+      });
+    });
+    
+    app.post('/blogs', async (req, res) => {
+      const data = req.body
+      // const video = req.files
+      console.log(data);
+      // console.log(video);
+      const videoData = req.files.video.data;
+      const encodedVideo = videoData.toString('base64');
+      const videoBuffer = Buffer.from(encodedVideo, 'base64');
+
+
+    //   const appartamento2 = {
+    //     ids_stile: appartamento.ids_stile.split(", ").map(s => +s),
+    //     ids_personaggi: appartamento.ids_personaggi.split(", ").map(s => parseInt(s)),
+    // }
+
       const post = {
             title : data.title, privacy: data.privacy, monetize : data.monetize, language : data.language, description : data.description, license : data.license, status: data.status, category : data.category.split(',').map(s => s) , tags : data.tags.split(',').map(s => s), video: videoBuffer, bloggerName : data.bloggerName, bloggerEmail: data.bloggerEmail, uploadTime : data.uploadTime, date : data.date,  comment: []
         }
@@ -66,13 +87,6 @@ async function run() {
       const blog = await blogsCollection.insertOne(post)
       res.json(blog)
     })
-
-      res.send({
-        count,
-        products,
-      });
-    });
-
 
     //user sign up data saving
 
