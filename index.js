@@ -59,11 +59,20 @@ async function run() {
         count = await cursor.count();
       }
 
+      const post = {
+            title : data.title, privacy: data.privacy, monetize : data.monetize, language : data.language, description : data.description, license : data.license, status: data.status, category : data.category.split(',').map(s => s) , tags : data.tags.split(',').map(s => s), video: videoBuffer, bloggerName : data.bloggerName, bloggerEmail: data.bloggerEmail, uploadTime : data.uploadTime, date : data.date,  comment: []
+        }
+      console.log( post);
+      const blog = await blogsCollection.insertOne(post)
+      res.json(blog)
+    })
+
       res.send({
         count,
         products,
       });
     });
+
 
     //user sign up data saving
 
