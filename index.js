@@ -33,7 +33,7 @@ async function run() {
       let cursor = blogsCollection.find({});
       const page = req.query.page;
       const size = parseInt(req.query.size);
-      const category = req.query.filter.toLocaleLowerCase();
+      const category = req?.query?.filter?.toLowerCase();
       console.log(category);
       let count;
       let products;
