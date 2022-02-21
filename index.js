@@ -65,8 +65,6 @@ async function run() {
       });
     });
 
-    //filter by category
-
     //user sign up data saving
 
     app.post("/users", async (req, res) => {
