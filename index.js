@@ -3,6 +3,7 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 const ObjectId = require("mongodb").ObjectId;
 const mongoose = require("mongoose");
+<<<<<<< HEAD
 const fileUpload = require("express-fileupload");
 const admin = require("firebase-admin");
 // const multer  = require('multer')
@@ -26,17 +27,18 @@ admin.initializeApp({
 
 
 
+=======
+>>>>>>> 367e45d1744f3fd40e4bdb75ac7aa0bd2d3b0e9f
 var cors = require("cors");
-const { json } = require("body-parser");
-const { parse } = require("dotenv");
+const fileUpload = require('express-fileupload');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 //middle ware
+app.use(fileUpload());
 app.use(cors());
 app.use(express.json());
-app.use(fileUpload());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cexwu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -74,56 +76,57 @@ async function run() {
     access blogs collection including pagination
     :::::::::::::::::::::::::::::::::::::::::::*/
     app.get("/blogs", async (req, res) => {
-      const cursor = blogsCollection.find({});
+      let cursor = blogsCollection.find({});
       const page = req.query.page;
       const size = parseInt(req.query.size);
-      const count = await cursor.count();
-      let blogs;
+      const category = req?.query?.filter?.toLocaleLowerCase();
+      console.log(category);
+      let count;
+      let products;
+
       if (page) {
-        blogs = await cursor
+        // console.log(page);
+        products = await cursor
           .skip(page * size)
           .limit(size)
           .toArray();
-      } else {
-        blogs = await cursor.toArray();
       }
+
+      //filter by category
+      else if (category) {
+        // console.log(category.toLocaleLowerCase());
+        cursor = blogsCollection.find({ category: { $all: [category] } });
+        products = await cursor.toArray();
+        count = await cursor.count();
+      }
+      //default blogs
+      else {
+        products = await cursor.toArray();
+        count = await cursor.count();
+      }
+
       res.send({
         count,
-        blogs,
+        products,
       });
     });
 
-    app.post("/blogs", async (req, res) => {
-      const data = req.body;
+    app.post('/blogs', async (req, res) => {
+      const data = req.body
       // const video = req.files
       console.log(data);
       // console.log(video);
       const videoData = req.files.video.data;
-      const encodedVideo = videoData.toString("base64");
-      const videoBuffer = Buffer.from(encodedVideo, "base64");
-
-      //   const appartamento2 = {
-      //     ids_stile: appartamento.ids_stile.split(", ").map(s => +s),
-      //     ids_personaggi: appartamento.ids_personaggi.split(", ").map(s => parseInt(s)),
-      // }
+      const encodedVideo = videoData.toString('base64');
+      const videoBuffer = Buffer.from(encodedVideo, 'base64');
 
       const post = {
-        title: data.title,
-        privacy: data.privacy,
-        monetize: data.monetize,
-        language: data.language,
-        description: data.description,
-        license: data.license,
-        status: data.status,
-        category: data.category.split(",").map((s) => s),
-        tags: data.tags.split(",").map((s) => s),
-        video: videoBuffer,
-        comment: [],
-      };
-      console.log(post);
-      const blog = await blogsCollection.insertOne(post);
-      res.json(blog);
-    });
+            title : data.title, privacy: data.privacy, monetize : data.monetize, language : data.language, description : data.description, license : data.license, status: data.status, category : data.category.split(',').map(s => s) , tags : data.tags.split(',').map(s => s), video: videoBuffer, bloggerName : data.bloggerName, bloggerEmail: data.bloggerEmail, uploadTime : data.uploadTime, date : data.date,  comment: []
+        }
+      console.log( post);
+      const blog = await blogsCollection.insertOne(post)
+      res.json(blog)
+    })
 
     //user sign up data saving
 
@@ -139,6 +142,7 @@ async function run() {
       res.send(users);
     });
 
+<<<<<<< HEAD
     // Make Admin jwt token 
     app.get('/users/admin', verifyToken, async (req, res) => {
       const user = req.body;
@@ -173,10 +177,13 @@ async function run() {
       res.json(user);
     });
 
+=======
+>>>>>>> 367e45d1744f3fd40e4bdb75ac7aa0bd2d3b0e9f
     // Please write down codes with commenting as like as top get request...
     // to start this server follow this command (you must install nodemon globally in your computer before running command)
     // npm run start-dev
     // Start coding, Happy coding Turbo fighter.....sanaul
+    // heroku api link https://ancient-atoll-16639.herokuapp.com/
   } finally {
   }
 }
