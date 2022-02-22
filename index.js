@@ -4,7 +4,7 @@ require("dotenv").config();
 const ObjectId = require("mongodb").ObjectId;
 const mongoose = require("mongoose");
 const fileUpload = require("express-fileupload");
-
+const admin = require("firebase-admin");
 // const multer  = require('multer')
 
 // const storage = multer.diskStorage({
@@ -17,6 +17,15 @@ const fileUpload = require("express-fileupload");
 // })
 
 // const uploadStorage = multer({ storage: storage })
+
+const serviceAccount = require("./proplayers-firebase-adminsdk.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+
+
 var cors = require("cors");
 const { json } = require("body-parser");
 const { parse } = require("dotenv");
@@ -34,6 +43,24 @@ const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+// jwt token
+async function verifyToken(req, res, next) {
+  if (req.headers?.authorization?.startsWith('Bearer ')) {
+    const idToken = req.headers.authorization.split(' ')[1];
+    // console.log('Bearer', idToken);
+    try {
+      const decodedAdmin = await admin.auth().verifyIdToken(idToken);
+      // console.log('email :', decodedAdmin.email);
+      req.decodedAdminEmail = decodedAdmin.email;
+    }
+    catch {
+
+    }
+
+  }
+  next();
+}
 
 async function run() {
   try {
@@ -111,6 +138,28 @@ async function run() {
       const users = await usersCollection.find({}).toArray();
       res.send(users);
     });
+
+    // Make Admin jwt token 
+    app.get('/users/admin', verifyToken, async (req, res) => {
+      const user = req.body;
+      // console.log(req.headers);
+      // console.log(req.decodedAdminEmail);
+      const requester = req.decodedAdminEmail;
+      if (requester) {
+        const requesterAccount = usersCollection.findOne({ email: requester });
+        if (requester.role === 'admin') {
+          // console.log('put', req.decodedAdminEmail);
+          const filter = { email: user.email };
+          const updateDoc = { $set: { role: 'admin' } };
+          const result = await usersCollection.updateOne(filter, updateDoc)
+          res.json(result);
+        }
+      }
+      else {
+        res.status(403).json({ message: ' You are not Admin' })
+      }
+
+    })
 
     //if your data already had saved in the database then we don't want to save it again
     app.put("/users", async (req, res) => {
