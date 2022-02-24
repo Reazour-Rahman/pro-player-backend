@@ -50,6 +50,7 @@ async function run() {
     const database = client.db("proPlayer");
     const blogsCollection = database.collection("blogs");
     const usersCollection = database.collection("users");
+    const userHelpCollection = database.collection("userHelp");
 
     /*::::::::::::::::::::::::::::::::::::::::: 
     access blogs collection including pagination
@@ -73,7 +74,7 @@ async function run() {
         blogs,
       });
     });
-
+    
     app.post("/blogs", async (req, res) => {
       const data = req.body;
       // const video = req.files
@@ -105,7 +106,9 @@ async function run() {
       res.json(blog);
     });
 
-    //user sign up data saving
+    /* :::::::::::::::::::::::::::::::::::::
+    User signup data saving to db
+    :::::::::::::::::::::::::::::::::::::::*/
 
     app.post("/users", async (req, res) => {
       const data = req.body;
@@ -114,10 +117,15 @@ async function run() {
       res.json(user);
     });
 
+    /* :::::::::::::::::::::::::::::::::::::
+    Post User  list
+    :::::::::::::::::::::::::::::::::::::::*/
     app.get("/users", async (req, res) => {
       const users = await usersCollection.find({}).toArray();
       res.send(users);
     });
+
+
 
     // Make Admin jwt token
     app.get("/users/admin", verifyToken, async (req, res) => {
@@ -139,6 +147,8 @@ async function run() {
       }
     });
 
+
+
     //if your data already had saved in the database then we don't want save it again
     app.put("/users", async (req, res) => {
       const data = req.body;
@@ -150,6 +160,31 @@ async function run() {
       const user = await usersCollection.updateOne(filter, updateDoc, option);
       res.json(user);
     });
+
+
+
+
+    /* :::::::::::::::::::::::::::::::::::::
+    Post User Help Message
+    :::::::::::::::::::::::::::::::::::::::*/
+    app.post("/userHelp", async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const userHelp = await userHelpCollection.insertOne(data);
+      res.json(userHelp);
+    });
+
+
+
+    /* :::::::::::::::::::::::::::::::::::::
+    Load User Help Message
+    :::::::::::::::::::::::::::::::::::::::*/
+    app.get("/userHelp", async (req, res) => {
+      const usersHelp = await userHelpCollection.find({}).toArray();
+      res.send(usersHelp);
+    });
+
+
 
     // Please write down codes with commenting as like as top get request...
     // to start this server follow this command (you must install nodemon globally in your computer before running command)
