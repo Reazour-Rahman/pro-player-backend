@@ -5,7 +5,7 @@ const ObjectId = require("mongodb").ObjectId;
 const mongoose = require("mongoose");
 const fileUpload = require("express-fileupload");
 const serviceAccount = require("./proplayers-firebase-adminsdk.json");
-
+const authRoutes = require("./routes/auth.js");
 const admin = require("firebase-admin");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -22,6 +22,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
+app.use(express.urlencoded());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cexwu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -159,6 +160,8 @@ async function run() {
   }
 }
 run().catch(console.dir);
+
+app.use('/auth', authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Pro player server is running now!");
