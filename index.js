@@ -3,7 +3,6 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 const ObjectId = require("mongodb").ObjectId;
 const mongoose = require("mongoose");
-<<<<<<< HEAD
 const fileUpload = require("express-fileupload");
 const admin = require("firebase-admin");
 // const multer  = require('multer')
@@ -27,10 +26,8 @@ admin.initializeApp({
 
 
 
-=======
->>>>>>> 367e45d1744f3fd40e4bdb75ac7aa0bd2d3b0e9f
 var cors = require("cors");
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -50,10 +47,10 @@ const client = new MongoClient(uri, {
 async function verifyToken(req, res, next) {
   if (req.headers?.authorization?.startsWith('Bearer ')) {
     const idToken = req.headers.authorization.split(' ')[1];
-    // console.log('Bearer', idToken);
+    console.log('Bearer', idToken);
     try {
       const decodedAdmin = await admin.auth().verifyIdToken(idToken);
-      // console.log('email :', decodedAdmin.email);
+      console.log('email :', decodedAdmin.email);
       req.decodedAdminEmail = decodedAdmin.email;
     }
     catch {
@@ -121,9 +118,9 @@ async function run() {
       const videoBuffer = Buffer.from(encodedVideo, 'base64');
 
       const post = {
-            title : data.title, privacy: data.privacy, monetize : data.monetize, language : data.language, description : data.description, license : data.license, status: data.status, category : data.category.split(',').map(s => s) , tags : data.tags.split(',').map(s => s), video: videoBuffer, bloggerName : data.bloggerName, bloggerEmail: data.bloggerEmail, uploadTime : data.uploadTime, date : data.date,  comment: []
-        }
-      console.log( post);
+        title: data.title, privacy: data.privacy, monetize: data.monetize, language: data.language, description: data.description, license: data.license, status: data.status, category: data.category.split(',').map(s => s), tags: data.tags.split(',').map(s => s), video: videoBuffer, bloggerName: data.bloggerName, bloggerEmail: data.bloggerEmail, uploadTime: data.uploadTime, date: data.date, comment: []
+      }
+      console.log(post);
       const blog = await blogsCollection.insertOne(post)
       res.json(blog)
     })
@@ -142,17 +139,18 @@ async function run() {
       res.send(users);
     });
 
-<<<<<<< HEAD
+
+
     // Make Admin jwt token 
     app.get('/users/admin', verifyToken, async (req, res) => {
       const user = req.body;
-      // console.log(req.headers);
-      // console.log(req.decodedAdminEmail);
+      console.log(req.headers);
+      console.log(req.decodedAdminEmail);
       const requester = req.decodedAdminEmail;
       if (requester) {
         const requesterAccount = usersCollection.findOne({ email: requester });
         if (requester.role === 'admin') {
-          // console.log('put', req.decodedAdminEmail);
+          console.log('put', req.decodedAdminEmail);
           const filter = { email: user.email };
           const updateDoc = { $set: { role: 'admin' } };
           const result = await usersCollection.updateOne(filter, updateDoc)
@@ -164,6 +162,36 @@ async function run() {
       }
 
     })
+
+
+    // Bloggers
+
+    app.get("/bloggers", async (req, res) => {
+      const users = await usersCollection.find({}).toArray();
+
+      const search = req.query.search;
+      if (search) {
+        const searchResult = users.filter(user => user.name.toLocaleLowerCase().includes(search));
+        res.send(searchResult)
+      }
+      else {
+        res.send(users)
+      }
+    });
+    // Make Admin
+    app.get("/makeAdmin", async (req, res) => {
+      const users = await usersCollection.find({}).toArray();
+
+      const search = req.query.search;
+      if (search) {
+        const searchResult = users.filter(user => user.email.toLocaleLowerCase().includes(search));
+        res.send(searchResult)
+      }
+      else {
+        res.send(users)
+      }
+    });
+
 
     //if your data already had saved in the database then we don't want to save it again
     app.put("/users", async (req, res) => {
@@ -177,8 +205,6 @@ async function run() {
       res.json(user);
     });
 
-=======
->>>>>>> 367e45d1744f3fd40e4bdb75ac7aa0bd2d3b0e9f
     // Please write down codes with commenting as like as top get request...
     // to start this server follow this command (you must install nodemon globally in your computer before running command)
     // npm run start-dev
