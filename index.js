@@ -75,7 +75,7 @@ async function run() {
         blogs,
       });
     });
-    
+
     app.post("/blogs", async (req, res) => {
       const data = req.body;
       // const video = req.files
@@ -126,8 +126,6 @@ async function run() {
       res.send(users);
     });
 
-
-
     // Make Admin jwt token
     app.get("/users/admin", verifyToken, async (req, res) => {
       const user = req.body;
@@ -148,8 +146,6 @@ async function run() {
       }
     });
 
-
-
     //if your data already had saved in the database then we don't want save it again
     app.put("/users", async (req, res) => {
       const data = req.body;
@@ -162,9 +158,6 @@ async function run() {
       res.json(user);
     });
 
-
-
-
     /* :::::::::::::::::::::::::::::::::::::
     Post User Help Message
     :::::::::::::::::::::::::::::::::::::::*/
@@ -175,8 +168,6 @@ async function run() {
       res.json(userHelp);
     });
 
-
-
     /* :::::::::::::::::::::::::::::::::::::
     Load User Help Message
     :::::::::::::::::::::::::::::::::::::::*/
@@ -184,8 +175,6 @@ async function run() {
       const usersHelp = await userHelpCollection.find({}).toArray();
       res.send(usersHelp);
     });
-
-
 
     // Please write down codes with commenting as like as top get request...
     // to start this server follow this command (you must install nodemon globally in your computer before running command)
@@ -196,7 +185,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.use('/auth', authRoutes);
+app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Pro player server is running now!");
