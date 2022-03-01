@@ -78,33 +78,9 @@ async function run() {
     
     app.post("/blogs", async (req, res) => {
       const data = req.body;
-      // const video = req.files
       console.log(data);
-      // console.log(video);
-      const videoData = req.files.video.data;
-      const encodedVideo = videoData.toString("base64");
-      const videoBuffer = Buffer.from(encodedVideo, "base64");
-
-      const post = {
-        title: data.title,
-        privacy: data.privacy,
-        monetize: data.monetize,
-        language: data.language,
-        description: data.description,
-        license: data.license,
-        status: data.status,
-        category: data.category.split(",").map((s) => s),
-        tags: data.tags.split(",").map((s) => s),
-        video: videoBuffer,
-        bloggerName: data.bloggerName,
-        bloggerEmail: data.bloggerEmail,
-        uploadTime: data.uploadTime,
-        date: data.date,
-        comment: [],
-      };
-      console.log(post);
-      const blog = await blogsCollection.insertOne(post);
-      res.json(blog);
+      const user = await blogsCollection.insertOne(data);
+      res.json(user);
     });
 
     /* :::::::::::::::::::::::::::::::::::::
