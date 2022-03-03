@@ -161,6 +161,43 @@ async function run() {
       res.send(usersHelp);
     });
 
+    /* :::::::::::::::::::::::::::::::::::::
+    post comment 
+    :::::::::::::::::::::::::::::::::::::::*/
+
+    app.put("/blogs/comment/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const data = req.body;
+      const comment = { comment: data }
+      const updateDoc = { $set: comment };
+      console.log(updateDoc);
+      const updatedPost = await blogsCollection.updateOne(filter, updateDoc);
+      res.json(updatedPost);
+    })
+
+    //Get SIngle Blog
+    app.get('/blogs/:id', async (req, res) => {
+      const id = req.params;
+      const query = { _id: ObjectId(id) }
+      const result = await blogsCollection.findOne(query);
+      res.json(result);
+  });
+
+  //sending likes array of object
+  // app.put("/blogs/likes/:id", async (req, res) => {
+  //   const id = req.params.id;
+  //   const filter = { _id: ObjectId(id) };
+  //   const data = req.body;
+  //   console.log(data);
+  //   const likes = { likes: data.likes, 
+  //   liker : data.liker }
+  //   console.log(likes);
+  //   const updateDoc = { $set: likes };
+  //   console.log(updateDoc);
+  //   const updatedPost = await blogsCollection.updateOne(filter, updateDoc);
+  //   res.json(updatedPost);
+  // })
 
 
     // Please write down codes with commenting as like as top get request...
