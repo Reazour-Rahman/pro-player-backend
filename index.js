@@ -185,19 +185,19 @@ async function run() {
   });
 
   //sending likes array of object
-  app.put("/blogs/likes/:id", async (req, res) => {
-    const id = req.params.id;
-    const filter = { _id: ObjectId(id) };
-    const data = req.body;
-    console.log(data);
-    const likes = { likes: data.likes, 
-    liker : data.liker }
-    console.log(likes);
-    const updateDoc = { $set: likes };
-    console.log(updateDoc);
-    const updatedPost = await blogsCollection.updateOne(filter, updateDoc);
-    res.json(updatedPost);
-  })
+  // app.put("/blogs/likes/:id", async (req, res) => {
+  //   const id = req.params.id;
+  //   const filter = { _id: ObjectId(id) };
+  //   const data = req.body;
+  //   console.log(data);
+  //   const likes = { likes: data.likes, 
+  //   liker : data.liker }
+  //   console.log(likes);
+  //   const updateDoc = { $set: likes };
+  //   console.log(updateDoc);
+  //   const updatedPost = await blogsCollection.updateOne(filter, updateDoc);
+  //   res.json(updatedPost);
+  // })
 
 
     // Please write down codes with commenting as like as top get request...
