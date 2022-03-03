@@ -103,6 +103,39 @@ async function run() {
     });
 
 
+    /* :::::::::::::::::::::::::::::::::::::
+    put User  channel
+    :::::::::::::::::::::::::::::::::::::::*/
+    app.put('/users/:id', async (req, res) => {
+      const id = req.params.id
+      console.log(id);
+      const data = req.body
+      const query = {_id : ObjectId(id)}
+      const option = {upsert : true}
+      const updateDoc = {
+          $set : {
+            thumb : data.thumb, 
+            title : data.title,
+            totalHotel : data.totalHotel,
+            avgPrice : data.avgPrice ,
+            descAbout : data.descAbout,
+            desc1 : data.desc1, 
+            visitPlace : data.visitPlace, 
+            image1 : data.image1, 
+            image2 : data.image2, 
+            image3 : data.image3,
+            rating : data.rating,
+            day : data.day,
+            Latitude : data.Latitude,
+            longitude : data.longitude,
+            status : data.status
+          }
+      }
+      const result = await blogsCollection.updateOne(query, updateDoc, option)
+      res.json(result)
+  })
+
+
 
     // Make Admin jwt token
     app.get("/users/admin", verifyToken, async (req, res) => {
