@@ -29,5 +29,14 @@
   },
   "engines": {
     "node": ">=14"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Reazour-Rahman/pro-player-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Reazour-Rahman/pro-player-backend/issues"
+  },
+  "homepage": "https://github.com/Reazour-Rahman/pro-player-backend#readme"
 }
